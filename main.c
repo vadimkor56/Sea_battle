@@ -18,9 +18,7 @@ int main() {
 
     srand(time(NULL));
 
-
-
-   initialization();
+    initialization();
 
     for (int i = 0; i < 10; i++) {
         for (int k = 0; k < 10; k++)
@@ -64,9 +62,41 @@ int main() {
 
         do {                                                                                                            // Серия ходов компьютера начинается
             flag = 0;
-            if (flag1 == 1) {                                                                                           // Переход в этот цикл, если компьютер попал
+            if (flag1 == 0) {                                                                                           // Переход в этот цикл, если компьютер попал
+                cellChoice();
+                xy_used[x][y] = 1;
+
+                if (usr_field[x][y] == shipHere) {
+                    printf("Ход компьютера: %d %d\nОн попал!\n", x, y);
+                    usr_field[x][y] = hit;
+                    flag1 = 1;
+                    flag2 = 0;
+                    x_hit = x;
+                    y_hit = y;
+
+                    if (killed(usr_field, x, y)) {
+                        printf("Ваш корабль уничтожен!\n");
+                        deadSheep(usr_field);
+                        flag1 = 0;
+                    }
+
+                    printf("Видимое поле врага:\t\t\t\t\t\t\t\tВаше поле:\n");
+                    output(visible_field, usr_field);
+
+                    comp_points++;
+                } else {
+                    flag = 1;
+                    usr_field[x][y] = miss;
+                    printf("Ход компьютера: %d %d\nОн не попал!\n", x, y);
+                    printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
+                    output(visible_field, usr_field);
+                }
+
+
+            } else {                                                                                                            // Выходим из этого цикла при уничтожении корабля человека
+
                 directionChoice(isOk, i);
-                xy_array[x][y] = 1;
+                xy_used[x][y] = 1;
                 i++;
 
                 if (usr_field[x][y] == shipHere) {
@@ -100,38 +130,6 @@ int main() {
                     if (flag2 == 1 && (option % 2 == 0)) {
                         option++;
                     }
-                    printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
-                    output(visible_field, usr_field);
-                }
-
-
-            } else {                                                                                                            // Выходим из этого цикла при уничтожении корабля человека
-
-                cellChoice();
-                xy_array[x][y] = 1;
-
-                if (usr_field[x][y] == shipHere) {
-                    printf("Ход компьютера: %d %d\nОн попал!\n", x, y);
-                    usr_field[x][y] = hit;
-                    flag1 = 1;
-                    flag2 = 0;
-                    x_hit = x;
-                    y_hit = y;
-
-                    if (killed(usr_field, x, y)) {
-                        printf("Ваш корабль уничтожен!\n");
-                        deadSheep(usr_field);
-                        flag1 = 0;
-                    }
-
-                    printf("Видимое поле врага:\t\t\t\t\t\t\t\tВаше поле:\n");
-                    output(visible_field, usr_field);
-
-                    comp_points++;
-                } else {
-                    flag = 1;
-                    usr_field[x][y] = miss;
-                    printf("Ход компьютера: %d %d\nОн не попал!\n", x, y);
                     printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
                     output(visible_field, usr_field);
                 }
