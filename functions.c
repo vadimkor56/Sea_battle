@@ -164,7 +164,7 @@ void cellChoice() {
         marker = 0;
         x = rand() % 10;
         y = rand() % 10;
-        if ((xy_array[x][y] == 0) && (isCellOk(x, y, usr_field) == 0)) marker = 1;
+        if ((xy_used[x][y] == 0) && (isCellOk(x, y, usr_field) == 0)) marker = 1;
     } while (marker == 0);
 }
 
@@ -228,10 +228,10 @@ void directionChoice(int isOk, int i){
             }
         }
 
-        if (xy_array[x][y] == 0 && isCellOk(x, y, usr_field) == 0) {
+        if (xy_used[x][y] == 0 && isCellOk(x, y, usr_field) == 0) {
             isOk = 1;
         }
-        if (flag2 == 1 && (xy_array[x][y] != 0 || isCellOk(x, y, usr_field) != 0)) {
+        if (flag2 == 1 && (xy_used[x][y] != 0 || isCellOk(x, y, usr_field) != 0)) {
             i = 1;
             if (option % 2 == 0) option++;
             else option--;
