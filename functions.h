@@ -1,7 +1,3 @@
-//
-// Created by Вадим корепанов on 05.12.17.
-//
-
 #ifndef SB1_FUNCTIONS_H
 #define SB1_FUNCTIONS_H
 
@@ -11,7 +7,7 @@
 int compfield[10][10], usr_field[10][10], visible_field[10][10];
 int option;
 _Bool flag, flag1, flag2, marker, flag3;
-int xy_array[10][10];
+int xy_used[10][10];
 _Bool options[4];
 int x, y, x_hit, y_hit;
 _Bool isFirst;
