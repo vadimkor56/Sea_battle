@@ -20,11 +20,11 @@ int main() {
 
     initialization();
 
-    for (int i = 0; i < 10; i++) {
+    /*for (int i = 0; i < 10; i++) {
         for (int k = 0; k < 10; k++)
             printf("%d ", compfield[i][k]);
         printf("\n");
-    }
+    }*/
 
     for (int i = 0; i < 10; ++i)
         for (int k = 0; k < 10; ++k)
@@ -62,7 +62,7 @@ int main() {
 
         do {                                                                                                            // Серия ходов компьютера начинается
             flag = 0;
-            if (flag1 == 0) {                                                                                           // Переход в этот цикл, если компьютер попал
+            if (flag1 == 0) {                                                                                           
                 cellChoice();
                 xy_used[x][y] = 1;
 
@@ -93,7 +93,7 @@ int main() {
                 }
 
 
-            } else {                                                                                                            // Выходим из этого цикла при уничтожении корабля человека
+            } else {                                                                                                            
 
                 directionChoice(isOk, i);
                 xy_used[x][y] = 1;
@@ -133,7 +133,7 @@ int main() {
                     printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
                     output(visible_field, usr_field);
                 }
-            }                                                                                                                   // Выходим из этого цикла и переходит в цикл выше, если компьютер попал
+            }                                                                                                               
 
             if (comp_points >= 20) break;
         } while (flag == 0);                                                                                            // Серия ходов компьютера заканчивается
