@@ -1,12 +1,18 @@
 #ifndef SB1_FUNCTIONS_H
 #define SB1_FUNCTIONS_H
 
-
+#define DESTROYED  2
+#define HIT 3
+#define SHIPHERE 1
+#define MISS  -1
+#define FORBIDDEN 8
+#define EMPTY 0
+#define OUTOFRANGE -1
 
 
 int compfield[10][10], usr_field[10][10], visible_field[10][10];
 int option;
-_Bool flag, flag1, flag2, marker, flag3;
+_Bool isRightDirection, isChosen, isCorrectInput, isMoveEnd;
 int xy_used[10][10];
 _Bool options[4];
 int x, y, x_hit, y_hit;
@@ -41,5 +47,7 @@ void directionChoice(int isOk, int i);
 void inputXY();
 
 int killed(int field[10][10], int x, int y);
+
+int cellStatus(int field[10][10], int x, int y);
 
 #endif //SB1_FUNCTIONS_H
