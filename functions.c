@@ -7,37 +7,30 @@
 #include <time.h>
 #include "functions.h"
 
-#define destroyed  2
-#define hit 3
-#define shipHere 1
-#define miss  -1
-#define forbidden 8
-
 
 
 void deadSheep(int field[10][10]) {                                                                                     // Изменяет состояние из "Ранен" в "Убит"
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 10; j++) {
-            if (field[i][j] == hit) field[i][j] = destroyed;
+            if (field[i][j] == HIT) field[i][j] = DESTROYED;
         }
 
 }
 
+int cellStatus(int field[10][10], int x, int y) {                                                                       //Статус данной клетки
+    if (x < 0 || x > 9 || y < 0 || y > 9) return OUTOFRANGE;
+    if (field[x][y] == SHIPHERE) return 1;
+    return EMPTY;
+
+}
 
 int isCellOk(int x, int y, int field[10][10]) {                                                                         // Проверяет, нет ли вокруг заданной клетки уничтоженного корабля
-    if (x - 1 >= 0) {
-        if (field[x - 1][y] == destroyed) return 1;
-        if ((field[x - 1][y - 1] == destroyed && y - 1 >= 0) || (field[x][y - 1] == destroyed && y - 1 >= 0)) return 1;
-        if ((field[x - 1][y + 1] == destroyed && y + 1 <= 9) || (field[x][y + 1] == destroyed && y + 1 <= 9)) return 1;
-    }
-    if (x + 1 <= 9) {
-        if (field[x + 1][y] == destroyed) return 1;
-        if ((field[x + 1][y - 1] == destroyed && y - 1 >= 0) || (field[x][y - 1] == destroyed && y - 1 >= 0)) return 1;
-        if ((field[x + 1][y + 1] == destroyed && y + 1 <= 9) || (field[x][y + 1] == destroyed && y + 1 <= 9)) return 1;
+    for (int j = x - 1; j <= x + 1; j++) {
+        for (int l = y - 1; l <= y + 1; l++)
+            if (cellStatus(compfield, j, l) != OUTOFRANGE && field[j][l] == DESTROYED) return 1;
     }
     return 0;
 }
-
 
 void output(int field[10][10], int field1[10][10]) {                                                                    // Вывод 2-х полей с рамками
     printf("  ");
@@ -72,61 +65,47 @@ void output(int field[10][10], int field1[10][10]) {                            
 
 void forbidden_territory(int x1, int y1, int x2, int y2, int compfield[10][10]) {                                       // Делает территорию вокруг поставленного корабля недоступной для расстановки на нее других кораблей
     if (x2 > x1) {
-        if (x1 - 1 >= 0) compfield[x1 - 1][y1] = forbidden;
-        if (x1 - 1 >= 0 && y1 - 1 >= 0) compfield[x1 - 1][y1 - 1] = forbidden;
-        if (x1 - 1 >= 0 && y1 + 1 <= 9) compfield[x1 - 1][y1 + 1] = forbidden;
-
-        if (x2 + 1 <= 9) compfield[x2 + 1][y1] = forbidden;
-        if (x2 + 1 <= 9 && y1 - 1 >= 0) compfield[x2 + 1][y1 - 1] = forbidden;
-        if (x2 + 1 <= 9 && y1 + 1 <= 9) compfield[x2 + 1][y1 + 1] = forbidden;
-
-        for (int i = x1; i <= x2; ++i) {
-            if (y1 + 1 <= 9) compfield[i][y1 + 1] = forbidden;
-            if (y1 - 1 >= 0) compfield[i][y1 - 1] = forbidden;
+        for (int i = x1; i <= x2; i++) {
+            for (int j = i - 1; j <= i + 1; j++) {
+                for (int l = y1 - 1; l <= y1 + 1; l++)
+                    if (cellStatus(compfield, j, l) == EMPTY) compfield[j][l] = FORBIDDEN;
+            }
         }
-
-    } else {
-        if (y1 - 1 >= 0) compfield[x1][y1 - 1] = forbidden;
-        if (x1 - 1 >= 0 && y1 - 1 >= 0) compfield[x1 - 1][y1 - 1] = forbidden;
-        if (y1 - 1 >= 0 && x1 + 1 <= 9) compfield[x1 + 1][y1 - 1] = forbidden;
-
-        if (y2 + 1 <= 9) compfield[x1][y2 + 1] = forbidden;
-        if (y2 + 1 <= 9 && x1 - 1 >= 0) compfield[x1 - 1][y2 + 1] = forbidden;
-        if (y2 + 1 <= 9 && x1 + 1 <= 9) compfield[x1 + 1][y2 + 1] = forbidden;
-
-        for (int i = y1; i <= y2; ++i) {
-            if (x1 + 1 <= 9) compfield[x1 + 1][i] = forbidden;
-            if (x1 - 1 >= 0) compfield[x1 - 1][i] = forbidden;
+    } else
+        for (int i = y1; i <= y2; i++) {
+            for (int j = i - 1; j <= i + 1; j++) {
+                for (int l = x1 - 1; l <= x1 + 1; l++)
+                    if (cellStatus(compfield, l, j) == 0) compfield[l][j] = FORBIDDEN;
+            }
         }
-
-    }
-
 }
+
 
 void fillin(struct ship regular_ship) {                                                                                 // Рандомная расстановка корабля компьютером
     do {
-        flag = 0;
+        isChosen = 0;
         regular_ship.x1 = rand() % 10;
         regular_ship.y1 = rand() % 10;
         regular_ship.orientation = rand() % 2;
         for (int i = regular_ship.x1; i <= regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size - 1); ++i)
             for (int j = regular_ship.y1;
                  j <= regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size - 1); ++j) {
-                if ((compfield[i][j] == shipHere) || (compfield[i][j] == forbidden) ||
+                if ((compfield[i][j] == SHIPHERE) || (compfield[i][j] == FORBIDDEN) ||
                     (regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size) >= 10) ||
                     (regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size) >= 10))
-                    flag = 1;
+                    isChosen = 1;
             }
-    } while (flag == 1);
+    } while (isChosen == 1);
     for (int i = regular_ship.x1; i <= regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size - 1); ++i)
         for (int j = regular_ship.y1;
              j <= regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size - 1); ++j) {
-            compfield[i][j] = shipHere;
+            compfield[i][j] = SHIPHERE;
         }
     forbidden_territory(regular_ship.x1, regular_ship.y1,
                         regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size - 1),
                         regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size - 1), compfield);
 }
+
 
 
 void initialization() {
@@ -161,18 +140,18 @@ void initialization() {
 
 void cellChoice() {
     do {                                                                                                            // Переход в этот цикл, если компьютер не попал
-        marker = 0;
+        isChosen = 0;
         x = rand() % 10;
         y = rand() % 10;
-        if ((xy_used[x][y] == 0) && (isCellOk(x, y, usr_field) == 0)) marker = 1;
-    } while (marker == 0);
+        if ((xy_used[x][y] == 0) && (isCellOk(x, y, usr_field) == 0)) isChosen = 1;
+    } while (isChosen == 0);
 }
 
 
 void directionChoice(int isOk, int i){
     do {
         isOk = 0;
-        if (flag2 == 0) option = rand() % 4;
+        if (isRightDirection == 0) option = rand() % 4;
         switch (option) {
             case 0: {
                 if (x_hit + i <= 9) {
@@ -231,7 +210,7 @@ void directionChoice(int isOk, int i){
         if (xy_used[x][y] == 0 && isCellOk(x, y, usr_field) == 0) {
             isOk = 1;
         }
-        if (flag2 == 1 && (xy_used[x][y] != 0 || isCellOk(x, y, usr_field) != 0)) {
+        if (isRightDirection == 1 && (xy_used[x][y] != 0 || isCellOk(x, y, usr_field) != 0)) {
             i = 1;
             if (option % 2 == 0) option++;
             else option--;
@@ -243,49 +222,50 @@ void directionChoice(int isOk, int i){
 
 void inputXY() {
     do {
-        flag3 = 0;
+        isCorrectInput = 0;
         printf("Ваш ход! Введите 2 числа: координату по Y и координату по X соответственно\n");
         scanf("%d %d", &x, &y);
         if (x > 9 || x < 0 || y < 0 || y > 9) {
             printf("Неверный ввод\n");
             continue;
         }
-        flag3 = 1;
-    }  while (flag3 == 0);
+        isCorrectInput = 1;
+    }  while (isCorrectInput == 0);
 
 };
 
 int killed(int field[10][10], int x, int y) {
-    if ((field[x + 1][y] != shipHere || x + 1 > 9) && (field[x - 1][y] != shipHere || x - 1 < 0) &&
-        (field[x][y + 1] != shipHere || y + 1 > 9) &&
-        (field[x][y - 1] != shipHere || y - 1 < 0)) {
+    if ((field[x + 1][y] != SHIPHERE || x + 1 > 9) && (field[x - 1][y] != SHIPHERE || x - 1 < 0) &&
+        (field[x][y + 1] != SHIPHERE || y + 1 > 9) &&
+        (field[x][y - 1] != SHIPHERE || y - 1 < 0)) {
         isFirst = 1;
-        if (field[x - 1][y] == hit) {
+        if (field[x - 1][y] == HIT) {
             isFirst = 0;
-            if (field[x - 2][y] == hit) {
-                if (field[x - 3][y] != shipHere || x - 3 < 0) return 1;
-            } else if (field[x - 2][y] != shipHere || x - 2 < 0) return 1;
+            if (field[x - 2][y] == HIT) {
+                if (field[x - 3][y] != SHIPHERE || x - 3 < 0) return 1;
+            } else if (field[x - 2][y] != SHIPHERE || x - 2 < 0) return 1;
         }
 
-        if (field[x + 1][y] == hit) {
+        if (field[x + 1][y] == HIT) {
             isFirst = 0;
-            if (field[x + 2][y] == hit) {
-                if (field[x + 3][y] != shipHere || x + 3 > 9) return 1;
-            } else if (field[x + 2][y] != shipHere || x + 2 > 9) return 1;
+            if (field[x + 2][y] == HIT) {
+                if (field[x + 3][y] != SHIPHERE || x + 3 > 9) return 1;
+            } else if (field[x + 2][y] != SHIPHERE || x + 2 > 9) return 1;
         }
 
-        if (field[x][y - 1] == hit) {
+        if (field[x][y - 1] == HIT) {
             isFirst = 0;
-            if (field[x][y - 2] == hit) {
-                if (field[x][y - 3] != shipHere || y - 3 < 0) return 1;
-            } else if (field[x][y - 2] != shipHere || y - 2 < 0) return 1;
+            if (field[x][y - 2] == HIT) {
+                if (field[x][y - 3] != SHIPHERE || y - 3 < 0) return 1;
+
+            } else if (field[x][y - 2] != SHIPHERE || y - 2 < 0) return 1;
         }
 
-        if (field[x][y + 1] == hit) {
+        if (field[x][y + 1] == HIT) {
             isFirst = 0;
-            if (field[x][y + 2] == hit) {
-                if (field[x][y + 3] != shipHere || y + 3 > 9) return 1;
-            } else if (field[x][y + 2] != shipHere || y + 2 > 9) return 1;
+            if (field[x][y + 2] == HIT) {
+                if (field[x][y + 3] != SHIPHERE || y + 3 > 9) return 1;
+            } else if (field[x][y + 2] != SHIPHERE || y + 2 > 9) return 1;
         }
         if (isFirst) return 1;
     }
