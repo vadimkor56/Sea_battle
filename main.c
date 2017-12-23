@@ -32,10 +32,9 @@ int main() {
                 compfield[x][y] = HIT;
                 visible_field[x][y] = HIT;
 
-                if (killed(compfield, x, y)) {
+                if (killed(compfield, x, y, visible_field)) {
                     cnt++;
                     printf("Вы уничтожили %d-й корабль противника!\n", cnt);
-                    deadSheep(compfield);
                 }
 
                 printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
@@ -65,9 +64,8 @@ int main() {
                     x_hit = x;
                     y_hit = y;
 
-                    if (killed(usr_field, x, y)) {
+                    if (killed(usr_field, x, y, usr_field)) {
                         printf("Ваш корабль уничтожен!\n");
-                        deadSheep(usr_field);
                         isMoveFirst = 1;
                     }
 
@@ -94,9 +92,8 @@ int main() {
                     usr_field[x][y] = HIT;
                     isRightDirection = 1;
 
-                    if (killed(usr_field, x, y)) {
+                    if (killed(usr_field, x, y, usr_field)) {
                         printf("Ваш корабль уничтожен!\n");
-                        deadSheep(usr_field);
                         isMoveFirst = 1;
                         i = 1;
                         for (int k = 0; k < 4; k++) options[k] = 0;
