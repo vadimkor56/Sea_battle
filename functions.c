@@ -8,8 +8,8 @@
 #include "functions.h"
 
 
-
-void deadSheep(int field[10][10]) {                                                                                     // Изменяет состояние из "Ранен" в "Убит"
+void deadSheep(
+        int field[10][10]) {                                                                                     // Изменяет состояние из "Ранен" в "Убит"
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 10; j++) {
             if (field[i][j] == HIT) field[i][j] = DESTROYED;
@@ -19,12 +19,13 @@ void deadSheep(int field[10][10]) {                                             
 
 int cellStatus(int field[10][10], int x, int y) {                                                                       //Статус данной клетки
     if (x < 0 || x > 9 || y < 0 || y > 9) return OUTOFRANGE;
-    if (field[x][y] == SHIPHERE) return 1;
+    if (field[x][y] == SHIPHERE) return SHIPHERE;
     return EMPTY;
 
 }
 
-int isCellOk(int x, int y, int field[10][10]) {                                                                         // Проверяет, нет ли вокруг заданной клетки уничтоженного корабля
+int isCellOk(int x, int y,
+             int field[10][10]) {                                                                         // Проверяет, нет ли вокруг заданной клетки уничтоженного корабля
     for (int j = x - 1; j <= x + 1; j++) {
         for (int l = y - 1; l <= y + 1; l++)
             if (cellStatus(compfield, j, l) != OUTOFRANGE && field[j][l] == DESTROYED) return 1;
@@ -32,7 +33,8 @@ int isCellOk(int x, int y, int field[10][10]) {                                 
     return 0;
 }
 
-void output(int field[10][10], int field1[10][10]) {                                                                    // Вывод 2-х полей с рамками
+void output(int field[10][10],
+            int field1[10][10]) {                                                                    // Вывод 2-х полей с рамками
     printf("  ");
     for (int i = 0; i < 10; i++)
         printf("%2d ", i);
@@ -63,7 +65,8 @@ void output(int field[10][10], int field1[10][10]) {                            
     }
 }
 
-void forbidden_territory(int x1, int y1, int x2, int y2, int compfield[10][10]) {                                       // Делает территорию вокруг поставленного корабля недоступной для расстановки на нее других кораблей
+void forbidden_territory(int x1, int y1, int x2, int y2,
+                         int compfield[10][10]) {                                       // Делает территорию вокруг поставленного корабля недоступной для расстановки на нее других кораблей
     if (x2 > x1) {
         for (int i = x1; i <= x2; i++) {
             for (int j = i - 1; j <= i + 1; j++) {
@@ -81,7 +84,8 @@ void forbidden_territory(int x1, int y1, int x2, int y2, int compfield[10][10]) 
 }
 
 
-void fillin(struct ship regular_ship) {                                                                                 // Рандомная расстановка корабля компьютером
+void
+fillin(struct ship regular_ship) {                                                                                 // Рандомная расстановка корабля компьютером
     do {
         isChosen = 0;
         regular_ship.x1 = rand() % 10;
@@ -105,7 +109,6 @@ void fillin(struct ship regular_ship) {                                         
                         regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size - 1),
                         regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size - 1), compfield);
 }
-
 
 
 void initialization() {
@@ -148,76 +151,36 @@ void cellChoice() {
 }
 
 
-void directionChoice(int isOk, int i){
+void directionChoice(int isOk, int i) {
     do {
         isOk = 0;
         if (isRightDirection == 0) option = rand() % 4;
         switch (option) {
-            case 0: {
-                if (x_hit + i <= 9) {
-                    x = x_hit + i;
-                    y = y_hit;
-                    break;
-                } else {
-                    i = 1;
-                    option++;
-                    x = x_hit - i;
-                    y = y_hit;
-                    break;
-                }
+            case DOWN: {
+                if (x_hit + i <= 9) {x = x_hit + i; y = y_hit; break; }
+                else {i = 1; option++; x = x_hit - i; y = y_hit; break;}
             }
-            case 1: {
-                if (x_hit - i >= 0) {
-                    x = x_hit - i;
-                    y = y_hit;
-                    break;
-                } else {
-                    i = 1;
-                    option--;
-                    x = x_hit + i;
-                    y = y_hit;
-                    break;
-                }
+            case UP: {
+                if (x_hit - i >= 0) {x = x_hit - i; y = y_hit; break;}
+                else {i = 1; option--; x = x_hit + i; y = y_hit; break;}
             }
-            case 2: {
-                if (y_hit + i <= 9) {
-                    y = y_hit + i;
-                    x = x_hit;
-                    break;
-                } else {
-                    i = 1;
-                    option++;
-                    y = y_hit - i;
-                    x = x_hit;
-                    break;
-                }
+            case RIGHT: {
+                if (y_hit + i <= 9) {y = y_hit + i; x = x_hit; break;}
+                else {i = 1; option++; y = y_hit - i; x = x_hit; break;}
             }
-            case 3: {
-                if (y_hit - i >= 0) {
-                    y = y_hit - i;
-                    x = x_hit;
-                    break;
-                } else {
-                    i = 1;
-                    option--;
-                    y = y_hit + i;
-                    x = x_hit;
-                    break;
-                }
+            case LEFT: {
+                if (y_hit - i >= 0) {y = y_hit - i; x = x_hit; break;}
+                else {i = 1; option--; y = y_hit + i; x = x_hit; break;}
             }
         }
-
-        if (xy_used[x][y] == 0 && isCellOk(x, y, usr_field) == 0) {
+        if (xy_used[x][y] == 0 && isCellOk(x, y, usr_field) == 0)
             isOk = 1;
-        }
         if (isRightDirection == 1 && (xy_used[x][y] != 0 || isCellOk(x, y, usr_field) != 0)) {
             i = 1;
             if (option % 2 == 0) option++;
             else option--;
         }
-
     } while (options[option] == 1 || isOk == 0);
-
 }
 
 void inputXY() {
@@ -230,44 +193,34 @@ void inputXY() {
             continue;
         }
         isCorrectInput = 1;
-    }  while (isCorrectInput == 0);
+    } while (isCorrectInput == 0);
 
 };
 
-int killed(int field[10][10], int x, int y) {
-    if ((field[x + 1][y] != SHIPHERE || x + 1 > 9) && (field[x - 1][y] != SHIPHERE || x - 1 < 0) &&
-        (field[x][y + 1] != SHIPHERE || y + 1 > 9) &&
-        (field[x][y - 1] != SHIPHERE || y - 1 < 0)) {
-        isFirst = 1;
-        if (field[x - 1][y] == HIT) {
-            isFirst = 0;
-            if (field[x - 2][y] == HIT) {
-                if (field[x - 3][y] != SHIPHERE || x - 3 < 0) return 1;
-            } else if (field[x - 2][y] != SHIPHERE || x - 2 < 0) return 1;
-        }
 
-        if (field[x + 1][y] == HIT) {
-            isFirst = 0;
-            if (field[x + 2][y] == HIT) {
-                if (field[x + 3][y] != SHIPHERE || x + 3 > 9) return 1;
-            } else if (field[x + 2][y] != SHIPHERE || x + 2 > 9) return 1;
-        }
-
-        if (field[x][y - 1] == HIT) {
-            isFirst = 0;
-            if (field[x][y - 2] == HIT) {
-                if (field[x][y - 3] != SHIPHERE || y - 3 < 0) return 1;
-
-            } else if (field[x][y - 2] != SHIPHERE || y - 2 < 0) return 1;
-        }
-
-        if (field[x][y + 1] == HIT) {
-            isFirst = 0;
-            if (field[x][y + 2] == HIT) {
-                if (field[x][y + 3] != SHIPHERE || y + 3 > 9) return 1;
-            } else if (field[x][y + 2] != SHIPHERE || y + 2 > 9) return 1;
-        }
-        if (isFirst) return 1;
+int killed(int field[10][10], int x, int y, int field2[10][10]) {                                                       //Проверка на "уничтоженность"
+    int xmin = x, xmax = x, ymin = y, ymax = y;
+    for (; xmin > 0; xmin--) {
+        if (field[xmin - 1][y] == SHIPHERE) return 0;
+        if (field[xmin - 1][y] != HIT) break;
     }
-    return 0;
+    for (; ymin > 0; ymin--) {
+        if (field[x][ymin - 1] == SHIPHERE) return 0;
+        if (field[x][ymin - 1] != HIT) break;
+    }
+    for (; xmax < 9; xmax++) {
+        if (field[xmax + 1][y] == SHIPHERE) return 0;
+        if (field[xmax + 1][y] != HIT) break;
+    }
+    for (; ymax < 9; ymax++) {
+        if (field[x][ymax + 1] == SHIPHERE) return 0;
+        if (field[x][ymax + 1] != HIT) break;
+    }
+
+    for (int i = xmin; i <= xmax; i++) {                                                                                //Из "ранен" в "убит"
+        for (int j = ymin; j <= ymax; j++) {
+            field2[i][j] = DESTROYED;
+        }
+    }
+    return 1;
 }
