@@ -1,3 +1,7 @@
+//
+// Created by Вадим корепанов on 05.12.17.
+//
+
 #ifndef SB1_FUNCTIONS_H
 #define SB1_FUNCTIONS_H
 
@@ -8,6 +12,10 @@
 #define FORBIDDEN 8
 #define EMPTY 0
 #define OUTOFRANGE -1
+#define DOWN 0
+#define UP 1
+#define RIGHT 2
+#define LEFT 3
 
 
 int compfield[10][10], usr_field[10][10], visible_field[10][10];
@@ -16,8 +24,6 @@ _Bool isRightDirection, isChosen, isCorrectInput, isMoveEnd;
 int xy_used[10][10];
 _Bool options[4];
 int x, y, x_hit, y_hit;
-_Bool isFirst;
-
 
 
 struct ship {
@@ -46,8 +52,9 @@ void directionChoice(int isOk, int i);
 
 void inputXY();
 
-int killed(int field[10][10], int x, int y);
+int killed(int field[10][10], int x, int y, int field2[10][10]);
 
 int cellStatus(int field[10][10], int x, int y);
+
 
 #endif //SB1_FUNCTIONS_H
