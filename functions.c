@@ -24,13 +24,13 @@ int cellStatus(int field[10][10], int x, int y) {                               
 
 }
 
-int isCellOk(int x, int y,
+int isCellBad(int x, int y,
              int field[10][10]) {                                                                         // Проверяет, нет ли вокруг заданной клетки уничтоженного корабля
     for (int j = x - 1; j <= x + 1; j++) {
         for (int l = y - 1; l <= y + 1; l++)
-            if (cellStatus(compfield, j, l) != OUTOFRANGE && field[j][l] == DESTROYED) return 1;
+            if (cellStatus(compfield, j, l) != OUTOFRANGE && field[j][l] == DESTROYED) return YES;
     }
-    return 0;
+    return NO;
 }
 
 void output(int field[10][10],
@@ -78,7 +78,7 @@ void forbidden_territory(int x1, int y1, int x2, int y2,
         for (int i = y1; i <= y2; i++) {
             for (int j = i - 1; j <= i + 1; j++) {
                 for (int l = x1 - 1; l <= x1 + 1; l++)
-                    if (cellStatus(compfield, l, j) == 0) compfield[l][j] = FORBIDDEN;
+                    if (cellStatus(compfield, l, j) == EMPTY) compfield[l][j] = FORBIDDEN;
             }
         }
 }
@@ -87,7 +87,7 @@ void forbidden_territory(int x1, int y1, int x2, int y2,
 void
 fillin(struct ship regular_ship) {                                                                                 // Рандомная расстановка корабля компьютером
     do {
-        isChosen = 0;
+        isChosen = YES;
         regular_ship.x1 = rand() % 10;
         regular_ship.y1 = rand() % 10;
         regular_ship.orientation = rand() % 2;
@@ -97,9 +97,9 @@ fillin(struct ship regular_ship) {                                              
                 if ((compfield[i][j] == SHIPHERE) || (compfield[i][j] == FORBIDDEN) ||
                     (regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size) >= 10) ||
                     (regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size) >= 10))
-                    isChosen = 1;
+                    isChosen = NO;
             }
-    } while (isChosen == 1);
+    } while (isChosen == NO);
     for (int i = regular_ship.x1; i <= regular_ship.x1 + (regular_ship.orientation) * (regular_ship.size - 1); ++i)
         for (int j = regular_ship.y1;
              j <= regular_ship.y1 + ((regular_ship.orientation + 1) % 2) * (regular_ship.size - 1); ++j) {
@@ -112,16 +112,6 @@ fillin(struct ship regular_ship) {                                              
 
 
 void initialization() {
-    struct ship ship4 = {4, 0, 0, 0};
-    struct ship ship31 = {3, 0, 0, 0};
-    struct ship ship32 = {3, 0, 0, 0};
-    struct ship ship21 = {2, 0, 0, 0};
-    struct ship ship22 = {2, 0, 0, 0};
-    struct ship ship23 = {2, 0, 0, 0};
-    struct ship ship11 = {1, 0, 0, 0};
-    struct ship ship12 = {1, 0, 0, 0};
-    struct ship ship13 = {1, 0, 0, 0};
-    struct ship ship14 = {1, 0, 0, 0};
 
     printf("Добро пожаловать в игру Морской Бой!\n\n");
     printf("Условные обозначения:\n0 - ничего/неизвестно, "
@@ -129,32 +119,30 @@ void initialization() {
                    "промах\n\n");
     printf("Расставьте корабли (введите матрицу 10 х 10; 1 - корабль/часть корабля, 0 - пустая клетка) \n");
 
-    fillin(ship4);
-    fillin(ship31);
-    fillin(ship32);
-    fillin(ship21);
-    fillin(ship22);
-    fillin(ship23);
-    fillin(ship11);
-    fillin(ship12);
-    fillin(ship13);
-    fillin(ship14);
+    int maxAmount = 0;
+    for (short length = maxLength; length >= 1; length--) {
+        maxAmount++;
+        for (short amount = 1; amount <= maxAmount; amount++) {
+            ships[length + amount].size = length;
+            fillin(ships[length + amount]);
+        }
+    }
 }
 
 void cellChoice() {
     do {                                                                                                            // Переход в этот цикл, если компьютер не попал
-        isChosen = 0;
+        isChosen = NO;
         x = rand() % 10;
         y = rand() % 10;
-        if ((xy_used[x][y] == 0) && (isCellOk(x, y, usr_field) == 0)) isChosen = 1;
-    } while (isChosen == 0);
+        if ((xy_used[x][y] == NO) && (isCellBad(x, y, usr_field) == NO)) isChosen = YES;
+    } while (isChosen == NO);
 }
 
 
 void directionChoice(int isOk, int i) {
     do {
-        isOk = 0;
-        if (isRightDirection == 0) option = rand() % 4;
+        isOk = NO;
+        if (isRightDirection == NO) option = rand() % WAYS;
         switch (option) {
             case DOWN: {
                 if (x_hit + i <= 9) {x = x_hit + i; y = y_hit; break; }
@@ -173,27 +161,27 @@ void directionChoice(int isOk, int i) {
                 else {i = 1; option--; y = y_hit + i; x = x_hit; break;}
             }
         }
-        if (xy_used[x][y] == 0 && isCellOk(x, y, usr_field) == 0)
-            isOk = 1;
-        if (isRightDirection == 1 && (xy_used[x][y] != 0 || isCellOk(x, y, usr_field) != 0)) {
+        if (xy_used[x][y] == NO && isCellBad(x, y, usr_field) == NO)
+            isOk = YES;
+        if (isRightDirection == YES && (xy_used[x][y] != NO || isCellBad(x, y, usr_field) != NO)) {
             i = 1;
             if (option % 2 == 0) option++;
             else option--;
         }
-    } while (options[option] == 1 || isOk == 0);
+    } while (options[option] == 1 || isOk == NO);
 }
 
 void inputXY() {
     do {
-        isCorrectInput = 0;
+        isCorrectInput = NO;
         printf("Ваш ход! Введите 2 числа: координату по Y и координату по X соответственно\n");
         scanf("%d %d", &x, &y);
         if (x > 9 || x < 0 || y < 0 || y > 9) {
             printf("Неверный ввод\n");
             continue;
         }
-        isCorrectInput = 1;
-    } while (isCorrectInput == 0);
+        isCorrectInput = YES;
+    } while (isCorrectInput == NO);
 
 };
 
@@ -201,19 +189,19 @@ void inputXY() {
 int killed(int field[10][10], int x, int y, int field2[10][10]) {                                                       //Проверка на "уничтоженность"
     int xmin = x, xmax = x, ymin = y, ymax = y;
     for (; xmin > 0; xmin--) {
-        if (field[xmin - 1][y] == SHIPHERE) return 0;
+        if (field[xmin - 1][y] == SHIPHERE) return NO;
         if (field[xmin - 1][y] != HIT) break;
     }
     for (; ymin > 0; ymin--) {
-        if (field[x][ymin - 1] == SHIPHERE) return 0;
+        if (field[x][ymin - 1] == SHIPHERE) return NO;
         if (field[x][ymin - 1] != HIT) break;
     }
     for (; xmax < 9; xmax++) {
-        if (field[xmax + 1][y] == SHIPHERE) return 0;
+        if (field[xmax + 1][y] == SHIPHERE) return NO;
         if (field[xmax + 1][y] != HIT) break;
     }
     for (; ymax < 9; ymax++) {
-        if (field[x][ymax + 1] == SHIPHERE) return 0;
+        if (field[x][ymax + 1] == SHIPHERE) return NO;
         if (field[x][ymax + 1] != HIT) break;
     }
 
@@ -222,5 +210,51 @@ int killed(int field[10][10], int x, int y, int field2[10][10]) {               
             field2[i][j] = DESTROYED;
         }
     }
-    return 1;
+    return YES;
+}
+
+void userHit(int cnt, int usr_points) {
+    printf("Попали!\n");
+    compfield[x][y] = HIT;
+    visible_field[x][y] = HIT;
+
+    if (killed(compfield, x, y, visible_field)) {
+        cnt++;
+        printf("Вы уничтожили %d-й корабль противника!\n", cnt);
+    }
+
+    printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
+    output(visible_field, usr_field);
+    usr_points++;
+}
+
+void userMiss() {
+    isMoveEnd = YES;
+    visible_field[x][y] = MISS;
+    printf("Не повезло!\n");
+}
+
+void compHit(int isMoveFirst, int comp_points) {
+    printf("Ход компьютера: %d %d\nОн попал!\n", x, y);
+    usr_field[x][y] = HIT;
+    isMoveFirst = NO;
+
+    if (killed(usr_field, x, y, usr_field)) {
+        printf("Ваш корабль уничтожен!\n");
+        isMoveFirst = YES;
+    }
+
+    printf("Видимое поле врага:\t\t\t\t\t\t\t\tВаше поле:\n");
+    output(visible_field, usr_field);
+
+    comp_points++;
+
+}
+
+void compMiss() {
+    isMoveEnd = YES;
+    usr_field[x][y] = MISS;
+    printf("Ход компьютера: %d %d\nОн не попал!!\n", x, y);
+    printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
+    output(visible_field, usr_field);
 }
