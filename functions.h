@@ -16,6 +16,10 @@
 #define UP 1
 #define RIGHT 2
 #define LEFT 3
+#define maxLength 4
+#define YES 1
+#define NO 0
+#define WAYS 4
 
 
 int compfield[10][10], usr_field[10][10], visible_field[10][10];
@@ -31,7 +35,7 @@ struct ship {
     _Bool orientation; //1 - horizontal, 0 - vertical
     short x1;
     short y1;
-};
+} ships[10];
 
 
 void deadSheep(int field[10][10]);
@@ -55,6 +59,14 @@ void inputXY();
 int killed(int field[10][10], int x, int y, int field2[10][10]);
 
 int cellStatus(int field[10][10], int x, int y);
+
+void userHit(int cnt, int usr_points);
+
+void userMiss();
+
+void compHit(int isMoveFirst, int comp_points);
+
+void compMiss();
 
 
 #endif //SB1_FUNCTIONS_H
