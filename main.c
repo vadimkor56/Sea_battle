@@ -17,12 +17,6 @@ int main() {
 
     initialization();
 
-    for (int i = 0; i < 10; ++i) {
-        for (int k = 0; k < 10; ++k)
-            printf("%d ", compfield[i][k]);
-        printf("\n");
-    }
-
     for (int i = 0; i < 10; ++i)
         for (int k = 0; k < 10; ++k)
             scanf("%d", &usr_field[i][k]);
