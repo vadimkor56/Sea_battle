@@ -28,7 +28,7 @@ int main() {
             isMoveEnd = NO;
             inputXY();
             if (compfield[x][y] == SHIPHERE)
-                userHit(cnt, usr_points);
+                userHit(&cnt, &usr_points);
             else
                userMiss();
             if (usr_points >= 20) break;
@@ -43,7 +43,7 @@ int main() {
                 xy_used[x][y] = YES;
 
                 if (usr_field[x][y] == SHIPHERE) {
-                    compHit(isMoveFirst, comp_points);
+                    compHit(&isMoveFirst, &comp_points);
                     isRightDirection = NO;
                     x_hit = x;
                     y_hit = y;
@@ -55,7 +55,7 @@ int main() {
                 xy_used[x][y] = YES;
                 i++;
                 if (usr_field[x][y] == SHIPHERE) {
-                    compHit(isMoveFirst, comp_points);
+                    compHit(&isMoveFirst, &comp_points);
                     isRightDirection = YES;
 
                     if (killed(usr_field, x, y, usr_field)) {
