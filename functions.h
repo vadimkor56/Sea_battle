@@ -38,9 +38,8 @@ struct ship {
 } ships[10];
 
 
-void deadSheep(int field[10][10]);
 
-int isCellOk(int x, int y, int field[10][10]);
+int isCellBad(int x, int y, int field[10][10]);
 
 void output(int field[10][10], int field1[10][10]);
 
@@ -60,11 +59,11 @@ int killed(int field[10][10], int x, int y, int field2[10][10]);
 
 int cellStatus(int field[10][10], int x, int y);
 
-void userHit(int cnt, int usr_points);
+void userHit(int *cnt, int *usr_points);
 
 void userMiss();
 
-void compHit(int isMoveFirst, int comp_points);
+void compHit(int *isMoveFirst, int *comp_points);
 
 void compMiss();
 
