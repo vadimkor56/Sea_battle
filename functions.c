@@ -7,16 +7,6 @@
 #include <time.h>
 #include "functions.h"
 
-
-void deadSheep(
-        int field[10][10]) {                                                                                     // Изменяет состояние из "Ранен" в "Убит"
-    for (int i = 0; i < 10; i++)
-        for (int j = 0; j < 10; j++) {
-            if (field[i][j] == HIT) field[i][j] = DESTROYED;
-        }
-
-}
-
 int cellStatus(int field[10][10], int x, int y) {                                                                       //Статус данной клетки
     if (x < 0 || x > 9 || y < 0 || y > 9) return OUTOFRANGE;
     if (field[x][y] == SHIPHERE) return SHIPHERE;
@@ -213,19 +203,19 @@ int killed(int field[10][10], int x, int y, int field2[10][10]) {               
     return YES;
 }
 
-void userHit(int cnt, int usr_points) {
+void userHit(int *cnt, int *usr_points) {
     printf("Попали!\n");
     compfield[x][y] = HIT;
     visible_field[x][y] = HIT;
 
     if (killed(compfield, x, y, visible_field)) {
-        cnt++;
-        printf("Вы уничтожили %d-й корабль противника!\n", cnt);
+        (*cnt)++;
+        printf("Вы уничтожили %d-й корабль противника!\n", *cnt);
     }
 
     printf("Видимое поле врага:\t\t\t\t\t\t\tВаше поле:\n");
     output(visible_field, usr_field);
-    usr_points++;
+    (*usr_points)++;
 }
 
 void userMiss() {
@@ -234,20 +224,20 @@ void userMiss() {
     printf("Не повезло!\n");
 }
 
-void compHit(int isMoveFirst, int comp_points) {
+void compHit(int *isMoveFirst, int *comp_points) {
     printf("Ход компьютера: %d %d\nОн попал!\n", x, y);
     usr_field[x][y] = HIT;
-    isMoveFirst = NO;
+    *isMoveFirst = NO;
 
     if (killed(usr_field, x, y, usr_field)) {
         printf("Ваш корабль уничтожен!\n");
-        isMoveFirst = YES;
+        *isMoveFirst = YES;
     }
 
     printf("Видимое поле врага:\t\t\t\t\t\t\t\tВаше поле:\n");
     output(visible_field, usr_field);
 
-    comp_points++;
+    (*comp_points)++;
 
 }
 
